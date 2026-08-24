@@ -1,0 +1,2 @@
+import { GitBranch } from 'lucide-react';
+export function WorkflowsPage(){ return <div className="page"><div className="page-header"><div><h1>Workflows</h1><p>工作流定义与 Agent 编排入口。</p></div><button className="primary-btn">创建 Workflow</button></div><div className="panel workflow-placeholder"><GitBranch size={38}/><h2>Workflow Studio</h2><p className="muted">下一阶段接入 React Flow，可将 Agent、Condition、Tool、Approval 组成 DAG。</p></div></div> }

@@ -1,0 +1,31 @@
+[project]
+name = "enterprise-ai-agent"
+version = "0.1.0"
+description = "Enterprise AI Agent Platform backend service"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+  "fastapi==0.116.1",
+  "alembic==1.16.4",
+  "uvicorn[standard]==0.35.0",
+  "sqlalchemy[asyncio]==2.0.43",
+  "asyncpg==0.30.0",
+  "pydantic-settings==2.10.1",
+  "python-jose[cryptography]==3.5.0",
+  "python-multipart==0.0.20",
+  "httpx==0.28.1",
+  "redis==6.4.0",
+  "qdrant-client==1.15.1",
+  "boto3==1.40.18",
+  "pypdf==6.0.0",
+  "langgraph==0.6.11",
+  "langchain-core==0.3.79",
+  "openai==2.16.0",
+  "prometheus-client==0.21.1",
+  "opentelemetry-api==1.36.0",
+  "opentelemetry-sdk==1.36.0"
+]
+
+[dependency-groups]
+dev = [
+  "pytest>=8.3,<9"
+]

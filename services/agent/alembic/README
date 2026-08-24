@@ -1,0 +1,4 @@
+Database migrations are managed by Alembic.
+Run from the repository root:
+
+uv run --directory services/agent alembic upgrade head

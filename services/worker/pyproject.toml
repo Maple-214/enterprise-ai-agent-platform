@@ -1,0 +1,14 @@
+[project]
+name = "enterprise-ai-agent-worker"
+version = "0.1.0"
+description = "Enterprise AI Agent asynchronous worker"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+  "redis==6.4.0",
+  "sqlalchemy[asyncio]==2.0.43",
+  "asyncpg==0.30.0",
+  "qdrant-client==1.15.1",
+  "boto3==1.40.18",
+  "pypdf==6.0.0",
+  "pydantic-settings==2.10.1"
+]
