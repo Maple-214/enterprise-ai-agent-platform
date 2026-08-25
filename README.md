@@ -71,6 +71,7 @@ Prometheus / OpenTelemetry-ready
 - JWT 登录
 - 基础 RBAC / Multi-Tenant 数据隔离
 - Approval / Human-in-the-loop 数据模型
+- Conversation / Run / RunEvent / ToolExecution 数据模型
 - Audit / Evaluation / Workflow 数据模型
 - Prometheus `/metrics`
 - Alembic 数据库迁移
@@ -100,6 +101,9 @@ enterprise-ai-agent-platform/
 │   ├── agent/                       # Python Agent/API 服务
 │   │   ├── app/
 │   │   │   ├── agent/               # LangGraph Runtime / Tools
+│   │   │   ├── conversation/         # 会话业务域
+│   │   │   ├── run/                  # 执行业务域与流式任务
+│   │   │   ├── runtime/              # Runtime 领域边界
 │   │   │   ├── api/                 # HTTP API
 │   │   │   ├── core/                # Config / Security
 │   │   │   ├── db/                  # SQLAlchemy Session
@@ -1022,3 +1026,168 @@ Enterprise Data Governance / Security
 # 24. License / Internal Use
 
 当前仓库作为企业内部 Agent 平台基础工程使用。正式对外发布前，请根据实际组织要求补充 License、第三方依赖合规及安全审计说明。
+
+---
+
+# 11. 核心领域边界：Conversation 与 Run 分离
+
+这是后续所有开发都必须遵守的设计约束。
+
+```text
+浏览器
+  │
+  ▼
+Conversation API
+  │
+  ├── 创建 / 查询 / 重命名 / 归档 / 删除
+  │
+  ▼
+Conversation
+  │
+  └───────────────┐
+                  ▼
+                 Run
+                  │
+        ┌─────────┼─────────┐
+        ▼         ▼         ▼
+      Agent      Tool      RAG
+        │         │         │
+        └─────────┼─────────┘
+                  ▼
+              Model Gateway
+```
+
+## Conversation
+
+Conversation 是用户看到的业务会话，负责：
+
+- 创建
+- 列表
+- 分页
+- 搜索
+- 重命名
+- 置顶
+- 归档
+- 恢复
+- 软删除
+- 清空消息
+
+## Run
+
+Run 是一次实际 Agent 执行。一个 Conversation 可以拥有多个 Run。
+
+```text
+一个对话
+├── 第一次提问 → Run 001
+├── 第二次提问 → Run 002
+└── 第三次提问 → Run 003
+```
+
+Run 保存：
+
+- 执行状态
+- Agent
+- 模型
+- trace_id
+- 输入内容
+- 开始 / 结束时间
+- 错误信息
+
+## RunEvent
+
+所有重要运行行为通过 RunEvent 记录：
+
+```text
+run.created
+run.started
+tool.started
+tool.completed
+citation.created
+message.created
+run.completed
+run.failed
+run.cancelled
+```
+
+因此后续可以在不修改 Conversation 模型的情况下继续建设：
+
+- 流式输出
+- Human-in-the-loop
+- Tool 执行记录
+- OpenTelemetry Trace
+- Evaluation
+- Run 重试
+- Run 取消
+- Run 回放
+- Multi-Agent
+- Workflow
+
+详细说明见：`docs/08-conversation-and-run.md`。
+
+---
+
+# 12. Conversation API
+
+```text
+POST   /api/conversations
+GET    /api/conversations
+GET    /api/conversations/:id
+PATCH  /api/conversations/:id
+DELETE /api/conversations/:id
+
+GET    /api/conversations/:id/messages
+DELETE /api/conversations/:id/messages
+
+POST   /api/conversations/:id/archive
+POST   /api/conversations/:id/restore
+POST   /api/conversations/:id/pin
+DELETE /api/conversations/:id/pin
+```
+
+删除采用软删除，不直接物理删除业务记录。
+
+---
+
+# 13. Run API
+
+```text
+POST /api/runs/conversations/:conversation_id
+POST /api/runs/conversations/:conversation_id/stream
+GET  /api/runs/:run_id
+GET  /api/runs/:run_id/events
+POST /api/runs/:run_id/cancel
+POST /api/runs/:run_id/retry
+```
+
+`POST /api/runs/conversations/:conversation_id/stream` 是当前前端对话页面使用的流式入口。
+
+旧的：
+
+```text
+POST /api/chat/stream
+```
+
+仍然保留作为兼容入口，但新的业务代码应该优先使用 `/runs`。
+
+---
+
+# 14. 前端中文界面约定
+
+当前控制台的业务组件文案统一使用中文，包括：
+
+- 工作台
+- 智能体
+- 对话中心
+- 知识库
+- 审批中心
+- 工作流
+- 系统设置
+- 新建对话
+- 重命名
+- 置顶
+- 归档
+- 删除
+- 清空消息
+- 停止执行
+
+代码层面的类型、接口名称和事件名称仍然使用英文工程术语，便于团队协作和 API 兼容；用户可见文本统一中文。

@@ -1,10 +1,4 @@
 import { Bot, Wrench } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { listAgents } from '../lib/api';
-
-export function AgentsPage() {
-  const query = useQuery({ queryKey: ['agents'], queryFn: listAgents });
-  return <div className="page"><div className="page-header"><div><h1>Agents</h1><p>管理 Agent 定义、Prompt 和工具能力。</p></div><button className="primary-btn">创建 Agent</button></div>
-  <div className="card-grid">{query.data?.map(agent => <div className="agent-card" key={agent.id}><div className="agent-card-icon"><Bot size={22}/></div><div className="agent-card-body"><div className="row-between"><h3>{agent.name}</h3><span className="status-pill success">Active</span></div><p>{agent.description}</p><div className="tool-tags">{agent.enabled_tools.map(tool => <span key={tool}><Wrench size={12}/>{tool}</span>)}</div></div></div>)}</div>
-  </div>;
-}
+export function AgentsPage(){ const query=useQuery({queryKey:['agents'],queryFn:listAgents}); return <div className="page"><div className="page-header"><div><h1>智能体</h1><p>管理智能体定义、系统提示词和工具能力。</p></div><button className="primary-btn">创建智能体</button></div><div className="card-grid">{query.data?.map((agent)=><div className="agent-card" key={agent.id}><div className="agent-card-icon"><Bot size={22}/></div><div className="agent-card-body"><div className="row-between"><h3>{agent.name}</h3><span className="status-pill success">已启用</span></div><p>{agent.description}</p><div className="tool-tags">{agent.enabled_tools.map(tool=><span key={tool}><Wrench size={12}/>{({calculator:'计算器',get_system_status:'系统状态',knowledge_search:'知识库检索'} as Record<string,string>)[tool] ?? tool}</span>)}</div></div></div>)}</div></div> }

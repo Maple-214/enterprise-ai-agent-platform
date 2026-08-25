@@ -60,7 +60,7 @@ async def tool_node(state: AgentState) -> AgentState:
         else:
             value = f"Tool {name} is not registered."
 
-        events.append({"name": name, "result": value})
+        events.append({"name": name, "arguments": args, "result": value})
         messages.append(
             {
                 "role": "tool",

@@ -5,7 +5,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy import select
 
-from .api import approvals, agents, auth, chat, conversations, health, knowledge
+from .api import approvals, agents, auth, chat, health, knowledge
+from .conversation.router import router as conversations_router
+from .run.router import router as runs_router
 from .core.config import settings
 from .core.security import hash_password
 from .db.session import SessionLocal
@@ -93,7 +95,8 @@ app.add_middleware(
 app.include_router(health.router)
 app.include_router(auth.router, prefix="/api")
 app.include_router(agents.router, prefix="/api")
-app.include_router(conversations.router, prefix="/api")
+app.include_router(conversations_router, prefix="/api")
+app.include_router(runs_router, prefix="/api")
 app.include_router(chat.router, prefix="/api")
 app.include_router(knowledge.router, prefix="/api")
 app.include_router(approvals.router, prefix="/api")

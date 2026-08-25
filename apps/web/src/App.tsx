@@ -23,7 +23,7 @@ function AppRouter(){
     if (!localStorage.getItem('agent_access_token')) { setReady(true); return; }
     getMe().then(setUser).catch(() => localStorage.removeItem('agent_access_token')).finally(() => setReady(true));
   }, [setUser]);
-  if (!ready) return <div className="loading-screen">Loading...</div>;
+  if (!ready) return <div className="loading-screen">正在加载...</div>;
   if (!user) return <Routes><Route path="*" element={<LoginPage/>}/></Routes>;
   return <Routes><Route element={<Layout/>}><Route path="/" element={<DashboardPage/>}/><Route path="/agents" element={<AgentsPage/>}/><Route path="/chat" element={<ChatPage/>}/><Route path="/knowledge" element={<KnowledgePage/>}/><Route path="/approvals" element={<ApprovalsPage/>}/><Route path="/workflows" element={<WorkflowsPage/>}/><Route path="/settings" element={<SettingsPage/>}/><Route path="*" element={<Navigate to="/" replace/>}/></Route></Routes>;
 }
